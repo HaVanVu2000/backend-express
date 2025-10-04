@@ -5,20 +5,20 @@
  * Sample Eslint config for NodeJS ExpressJS MongoDB project
  */
 module.exports = {
-  env: { es2020: true, node: true },
-  extends: [
-    'eslint:recommended'
-  ],
+  env: { es2021: true, node: true },
+  extends: ['eslint:recommended', 'plugin:prettier/recommended'],
   parser: '@babel/eslint-parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
     requireConfigFile: false,
-    allowImportExportEverywhere: true
+    allowImportExportEverywhere: true,
   },
   plugins: [],
   rules: {
     // Common
+    'prettier/prettier': 'error',
+    'no-unused-vars': 'off',
     'no-console': 1,
     'no-extra-boolean-cast': 0,
     'no-lonely-if': 1,
@@ -28,15 +28,15 @@ module.exports = {
     'no-multiple-empty-lines': 1,
     'space-before-blocks': ['error', 'always'],
     'object-curly-spacing': [1, 'always'],
-    'indent': ['warn', 2],
-    'semi': [1, 'never'],
-    'quotes': ['error', 'single'],
+    indent: ['warn', 2],
+    semi: [1, 'never'],
+    quotes: ['error', 'single'],
     'array-bracket-spacing': 1,
     'linebreak-style': 0,
     'no-unexpected-multiline': 'warn',
     'keyword-spacing': 1,
     'comma-dangle': 1,
     'comma-spacing': 1,
-    'arrow-spacing': 1
-  }
+    'arrow-spacing': 1,
+  },
 }

@@ -6,27 +6,46 @@
 
 import express from 'express'
 import { mapOrder } from '~/utils/sorts.js'
-
+import { CONNECT_DB, CLOSE_DB } from '~/config/mongodb'
+import exitHook from 'async-exit-hook'
+import { env } from '~/config/environment.js'
+import { APIs_V1 } from '~/routes/v1/index.js'
+import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware.js'
 const app = express()
 
-const hostname = 'localhost'
-const port = 8017
+const START_SERVER = () => {
+  app.use(express.json())
+  app.use('/v1', APIs_V1)
+  // xử lý lỗi tập trung
+  console.log('errorHandlingMiddleware:', errorHandlingMiddleware)
+  app.use(errorHandlingMiddleware)
 
-app.get('/', (req, res) => {
-  // Test Absolute import mapOrder
-  console.log(mapOrder(
-    [ { id: 'id-1', name: 'One' },
-      { id: 'id-2', name: 'Two' },
-      { id: 'id-3', name: 'Three' },
-      { id: 'id-4', name: 'Four' },
-      { id: 'id-5', name: 'Five' } ],
-    ['id-5', 'id-4', 'id-2', 'id-3', 'id-1'],
-    'id'
-  ))
-  res.end('<h1>Hello World!</h1><hr>')
-})
+  app.listen(env.APP_PORT, env.APP_HOST, () => {
+    // eslint-disable-next-line no-console
+  })
 
-app.listen(port, hostname, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Hello Trung Quan Dev, I am running at ${ hostname }:${ port }/`)
-})
+  exitHook(() => {
+    // chạy trên win lỗi không nhảy vào đây được
+    console.log('4. Disconneting from MongoDB Cloud Atlas')
+    CLOSE_DB()
+  })
+}
+;(async () => {
+  try {
+    console.log('1 Connected to mongoDB Cloud Atlas')
+    await CONNECT_DB()
+    console.log('2 Connected to mongoDB Cloud Atlas')
+    START_SERVER()
+  } catch (error) {
+    ;(console.error(error), process.exit(0))
+  }
+})()
+
+// CONNECT_DB().then(() => console.log(' 2 Connected to mongoDB Cloud Atlas')).then(
+//   () => START_SERVER()
+// ).catch(
+//   error => {
+//  console.error(error),
+//  process.exit(0)
+//   }
+// )
